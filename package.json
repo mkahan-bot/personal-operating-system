@@ -1,0 +1,15 @@
+{
+  "name": "personal-operating-system-site",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Secure server-side OpenAI API route for the Personal Operating System ChatGPT Site.",
+  "scripts": {
+    "check": "node --check worker.js",
+    "test": "node --test",
+    "dev": "node dev-server.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
