@@ -1,4 +1,4 @@
-name: Deploy Jefferson dashboard to GitHub Pages
+name: Deploy dashboard to GitHub Pages
 
 on:
   push:
@@ -23,12 +23,21 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+
+      - name: Prepare static site
+        run: |
+          mkdir -p site-dist
+          cp index.html site-dist/index.html
+          touch site-dist/.nojekyll
+
       - name: Configure Pages
         uses: actions/configure-pages@v5
+
       - name: Upload static site
         uses: actions/upload-pages-artifact@v4
         with:
-          path: .
+          path: site-dist
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
