@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import { handleRequest } from "../worker.js";
 
 test("dashboard is publicly accessible without secrets", async () => {
@@ -7,6 +8,14 @@ test("dashboard is publicly accessible without secrets", async () => {
   assert.equal(response.status, 200);
   assert.match(await response.text(), /Property Management Command Center/);
   assert.equal(response.headers.get("x-robots-tag"), "noindex, nofollow, noarchive");
+});
+
+test("static public mirror requires no password or account", async () => {
+  const html = await readFile(new URL("../public/index.html", import.meta.url), "utf8");
+  assert.match(html, /Public link active/);
+  assert.match(html, /No password/);
+  assert.doesNotMatch(html, /type="password"/);
+  assert.doesNotMatch(html, /action="\/auth\/login"/);
 });
 
 test("health reports public access and disabled AI by default", async () => {
