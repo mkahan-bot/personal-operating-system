@@ -1,9 +1,9 @@
 {
   "name": "personal-operating-system-site",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
-  "description": "Password-protected Property Management Command Center with a secure server-side OpenAI route.",
+  "description": "Public-link Property Management Command Center with an optional secure server-side OpenAI route.",
   "scripts": {
     "check": "node --check worker.js",
     "test": "node --test",
