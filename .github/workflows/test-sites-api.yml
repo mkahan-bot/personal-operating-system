@@ -21,5 +21,5 @@ jobs:
           node-version: 22
       - name: Syntax check
         run: npm run check
-      - name: Route and password-authentication tests
+      - name: Route and public-access tests
         run: npm test
