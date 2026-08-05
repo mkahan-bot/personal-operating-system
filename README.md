@@ -1,15 +1,15 @@
-# Property Central Command OS — Public Link Deployment
+# Property Command Center — Public Link Deployment
 
 **Public dashboard:** https://mkahan-bot.github.io/personal-operating-system/
 
-**Hosted application:** https://property-central-command-os.whole-isle-6550.chatgpt.site
+**Hosted application:** https://property-command-center.whole-isle-6550.chatgpt.site
 
-The password gate has been removed. Anyone who has either published URL can view the dashboard without a ChatGPT, GitHub, workspace, email, or other account, provided the ChatGPT Site audience is also set to **Anyone on the Internet**.
+The password gate has been removed from the application code. Anyone who has either published URL can view the dashboard without a ChatGPT, GitHub, workspace, email, or other account, provided the ChatGPT Site audience is also set to **Anyone on the Internet**.
 
 ## Public-access behavior
 
 - GitHub Pages serves the dashboard directly and requires no password or account.
-- The hosted application page and health endpoint no longer enforce a password session.
+- The hosted application page and health endpoint do not enforce a password session.
 - Former `/login` and authentication routes redirect to the dashboard.
 - Responses and the static mirror include `noindex`, `nofollow`, and `noarchive` directives to discourage search-engine discovery; the URLs must still be treated as public and shareable.
 - No OpenAI API key is delivered to the browser.
@@ -17,7 +17,7 @@ The password gate has been removed. Anyone who has either published URL can view
 
 ## ChatGPT Sites configuration
 
-For the hosted application URL, set the Site audience to **Anyone on the Internet** and publish the current `main` version. OpenAI describes this audience as publicly accessible to anyone through the Site URL.
+For the hosted application URL, set the Site audience to **Anyone on the Internet** and publish the current `main` version.
 
 The previous hosted secrets `SITE_ACCESS_PASSWORD` and `SITE_SESSION_SECRET` are no longer used and may be deleted from the Site settings.
 
