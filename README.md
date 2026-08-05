@@ -1,27 +1,27 @@
-# Personal Operating System — ChatGPT Sites API Migration
+# Property Management Command Center — Password Access
 
-This branch adds a secure, server-side OpenAI API route for the Personal Operating System dashboard.
+This deployment uses a server-side shared-password gate. Visitors need only the Site URL and the shared password; no ChatGPT, GitHub, workspace, email, or other account is required.
 
-## What is included
+## Security behavior
 
-- `worker.js` — full-stack JavaScript entry point
-  - `GET /` serves the dashboard
-  - `GET /api/health` reports whether the server secret is configured
-  - `POST /api/ai` validates input and calls the OpenAI Responses API
-- `dev-server.mjs` — zero-dependency local development server
-- `test/worker.test.mjs` — route and response parsing tests
-- `.openai/hosting.json` — ChatGPT Sites project metadata placeholder
-- `.env.example` — required environment-variable names without secret values
+- Every page and API route is protected.
+- The site fails closed with HTTP 503 if password secrets are missing.
+- A correct password creates a signed, `HttpOnly`, `Secure`, `SameSite=Lax` cookie valid for 24 hours.
+- Passwords and signing secrets are read only from hosted environment secrets and are never committed to GitHub or sent back to the browser.
+- The AI endpoint is protected by the same password session.
 
-## Security controls
+## Required ChatGPT Sites configuration
 
-- The OpenAI API key is read only from `OPENAI_API_KEY` on the server.
-- No key is embedded in HTML, browser JavaScript, repository files, or `.openai/hosting.json`.
-- API responses are not stored by OpenAI (`store: false`).
-- Request size limits and content-type validation are enforced.
-- `REQUIRE_AUTH=true` can restrict the AI endpoint to authenticated Site users.
-- A hashed per-user safety identifier is sent when an authenticated user header is available.
-- Browser responses include restrictive security headers.
+In **Sites → Property Management Command Center → More actions → Settings**, add these hosted secrets:
+
+- `SITE_ACCESS_PASSWORD` — the shared third-party password.
+- `SITE_SESSION_SECRET` — a random value of at least 32 characters, separate from the password.
+- `OPENAI_API_KEY` — required only for the AI advisor.
+- `OPENAI_MODEL` — optional; defaults to `gpt-5`.
+
+Then set the Site audience to **Anyone on the internet** and redeploy the approved saved version. The Site must be public at the platform-sharing layer so unauthenticated visitors can reach the built-in password page; the built-in password gate then controls dashboard access.
+
+Do not put secret values in `.openai/hosting.json`, source files, prompts, or attachments.
 
 ## Local validation
 
@@ -30,21 +30,8 @@ Requires Node.js 20 or later.
 ```bash
 npm run check
 npm test
-OPENAI_API_KEY=your-local-key REQUIRE_AUTH=false npm run dev
+SITE_ACCESS_PASSWORD=test-password \
+SITE_SESSION_SECRET=0123456789abcdef0123456789abcdef \
+OPENAI_API_KEY=your-local-key \
+npm run dev
 ```
-
-Do not commit a real key.
-
-## ChatGPT Sites deployment
-
-1. Open the existing Personal Operating System Site in ChatGPT Sites.
-2. Import or attach this GitHub branch as the Site source.
-3. In the Site's **Settings → Environment variables / Secrets**, add:
-   - `OPENAI_API_KEY` as a secret
-   - `OPENAI_MODEL` as `gpt-5` (optional)
-   - `REQUIRE_AUTH` as `true`
-4. Save a new version and deploy it.
-5. Open `/api/health`; it should return `"configured": true`.
-6. Submit a question through the dashboard and confirm `/api/ai` returns an answer.
-
-The existing GitHub Pages deployment is static and cannot securely hold an OpenAI API key. Use ChatGPT Sites or another server-capable host for this branch.
