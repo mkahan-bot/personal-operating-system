@@ -1,4 +1,4 @@
-name: Deploy protected dashboard entry
+name: Deploy public dashboard entry
 
 on:
   push:
@@ -24,7 +24,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Prepare protected Site entry page
+      - name: Prepare public Site entry page
         run: |
           mkdir -p site-dist
           cat > site-dist/index.html <<'HTML'
@@ -47,8 +47,8 @@ jobs:
           <body>
             <main>
               <h1>Property Central Command OS</h1>
-              <p>The dashboard is hosted on the protected Site. A shared password is required; no ChatGPT or GitHub account is needed.</p>
-              <a href="https://property-central-command-os.whole-isle-6550.chatgpt.site">Open protected dashboard</a>
+              <p>The dashboard is publicly shared. Anyone with the Site link can open it without a password or account.</p>
+              <a href="https://property-central-command-os.whole-isle-6550.chatgpt.site">Open dashboard</a>
             </main>
             <script>location.replace("https://property-central-command-os.whole-isle-6550.chatgpt.site");</script>
           </body>
