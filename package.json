@@ -1,9 +1,9 @@
 {
   "name": "personal-operating-system-site",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
-  "description": "Secure server-side OpenAI API route for the Personal Operating System ChatGPT Site.",
+  "description": "Password-protected Property Management Command Center with a secure server-side OpenAI route.",
   "scripts": {
     "check": "node --check worker.js",
     "test": "node --test",
