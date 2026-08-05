@@ -2,9 +2,9 @@ name: Test Sites API
 
 on:
   pull_request:
+    branches: [main]
   push:
-    branches:
-      - fix/sites-openai-api
+    branches: [main]
 
 permissions:
   contents: read
@@ -21,5 +21,5 @@ jobs:
           node-version: 22
       - name: Syntax check
         run: npm run check
-      - name: Route tests
+      - name: Route and password-authentication tests
         run: npm test
