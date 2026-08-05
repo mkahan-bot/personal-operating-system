@@ -1,10 +1,8 @@
 const DEFAULT_MODEL = "gpt-5";
 const MAX_QUESTION_LENGTH = 4_000;
 const MAX_CONTEXT_LENGTH = 12_000;
-const SESSION_COOKIE = "pcc_session";
-const SESSION_TTL_SECONDS = 60 * 60 * 24;
 
-const SYSTEM_INSTRUCTIONS = `You are the AI operating advisor inside a private Personal Operating System dashboard.
+const SYSTEM_INSTRUCTIONS = `You are the AI operating advisor inside a property management command center.
 Use only the information supplied in the request. Do not claim you changed records, sent messages, or completed external actions.
 Give a decision-useful answer with these sections when applicable: Answer, Priorities, Risks or gaps, and Next actions.
 Be precise, concise, and candid about missing information.`;
@@ -15,6 +13,7 @@ const SITE_HTML = String.raw`<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#101a2b">
+<meta name="robots" content="noindex,nofollow,noarchive">
 <title>Property Management Command Center</title>
 <style>
 :root{color-scheme:light;--ink:#162034;--muted:#667085;--navy:#101a2b;--paper:#f4f6f8;--card:#fff;--line:#dfe4ea;--green:#18836f;--gold:#c99335;--red:#b8424a}
@@ -29,8 +28,8 @@ h1{margin:3px 0 4px;font-size:34px;letter-spacing:-.04em}.sub{margin:0;color:var
 .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:26px}.metric,.panel{border:1px solid var(--line);border-radius:17px;background:var(--card);box-shadow:0 10px 28px #13233c10}
 .metric{padding:18px}.metric span{display:block;color:var(--muted);font-size:11px;font-weight:750;text-transform:uppercase;letter-spacing:.06em}.metric strong{display:block;margin-top:10px;font-size:28px}
 .layout{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(300px,.75fr);gap:18px;margin-top:18px}.panel{padding:22px}.panel h2{margin:0;font-size:18px}.panel .help{margin:5px 0 18px;color:var(--muted);font-size:12px}
-textarea{width:100%;min-height:125px;padding:13px;border:1px solid var(--line);border-radius:12px;resize:vertical;font:inherit;outline:none}textarea:focus{border-color:var(--green);box-shadow:0 0 0 3px #18836f18}
-.row{display:flex;gap:10px;align-items:center;margin-top:12px}.button{border:0;border-radius:10px;padding:11px 15px;background:var(--navy);color:#fff;font-weight:800;cursor:pointer}.button:disabled{opacity:.55;cursor:wait}.logout{margin-left:auto;border:0;background:transparent;color:var(--muted);font:inherit;text-decoration:underline;cursor:pointer}
+textarea{width:100%;min-height:125px;padding:13px;border:1px solid var(--line);border-radius:12px;resize:vertical;font:inherit;outline:none}textarea:focus{border-color:var(--green);box-shadow:0 0 0 3px #18836f18}textarea:disabled{background:#f3f5f7;color:#8a94a3}
+.row{display:flex;gap:10px;align-items:center;margin-top:12px}.button{border:0;border-radius:10px;padding:11px 15px;background:var(--navy);color:#fff;font-weight:800;cursor:pointer}.button:disabled{opacity:.55;cursor:not-allowed}
 .answer{min-height:210px;margin-top:18px;padding:16px;border-radius:13px;background:#f8fafb;border:1px solid var(--line);white-space:pre-wrap}.answer.empty{color:var(--muted)}
 .list{display:grid;gap:11px}.item{padding:13px;border:1px solid var(--line);border-radius:12px}.item strong{display:block;font-size:13px}.item small{color:var(--muted)}
 .note{margin-top:16px;padding:13px;border-radius:12px;background:#edf8f5;color:#225f55;font-size:11px}
@@ -40,9 +39,9 @@ textarea{width:100%;min-height:125px;padding:13px;border:1px solid var(--line);b
 </head>
 <body>
 <div class="shell">
-<aside><div class="brand">Property Command<small>Management operations</small></div><nav><a class="active" href="#">Command Center</a><a href="#">Properties</a><a href="#">Projects</a><a href="#">Tasks</a></nav><div class="security">This dashboard is protected by a server-side password session. The OpenAI API key is never delivered to the browser.</div></aside>
+<aside><div class="brand">Property Command<small>Management operations</small></div><nav><a class="active" href="#">Command Center</a><a href="#">Properties</a><a href="#">Projects</a><a href="#">Tasks</a></nav><div class="security">Anyone with the Site link can view this dashboard. The OpenAI API key remains server-side and is never delivered to the browser.</div></aside>
 <main>
-<div class="top"><div><div class="eyebrow">Private property dashboard</div><h1>Property Management Command Center</h1><p class="sub">Portfolio oversight, priorities, projects, and operating decisions.</p></div><div><div class="status" id="apiStatus"><span class="dot"></span><span>Checking API</span></div><form method="post" action="/auth/logout"><button class="logout" type="submit">Sign out</button></form></div></div>
+<div class="top"><div><div class="eyebrow">Shared property dashboard</div><h1>Property Management Command Center</h1><p class="sub">Portfolio oversight, priorities, projects, and operating decisions.</p></div><div class="status" id="apiStatus"><span class="dot"></span><span>Checking AI</span></div></div>
 <div class="grid">
 <div class="metric"><span>Properties</span><strong>4</strong></div>
 <div class="metric"><span>Decisions needed</span><strong>2</strong></div>
@@ -50,7 +49,7 @@ textarea{width:100%;min-height:125px;padding:13px;border:1px solid var(--line);b
 <div class="metric"><span>Active priorities</span><strong>3</strong></div>
 </div>
 <div class="layout">
-<section class="panel"><h2>Ask the operating advisor</h2><p class="help">Ask for prioritization, a decision memo, risk review, delegation plan, or next-action sequence.</p>
+<section class="panel"><h2>Ask the operating advisor</h2><p class="help">The public dashboard can be viewed by anyone with the link. AI access is separately controlled to protect API usage.</p>
 <form id="aiForm"><textarea id="question" maxlength="4000" required placeholder="Example: What are the three highest-leverage property actions today, and what should I delegate?"></textarea><div class="row"><button class="button" id="askButton" type="submit">Analyze</button><span class="help" id="requestState"></span></div></form>
 <div class="answer empty" id="answer">The response will appear here.</div></section>
 <section class="panel"><h2>Request patterns</h2><p class="help">The advisor works best with concrete facts and desired outcomes.</p><div class="list">
@@ -66,23 +65,15 @@ textarea{width:100%;min-height:125px;padding:13px;border:1px solid var(--line);b
 const statusEl=document.getElementById("apiStatus");
 const answerEl=document.getElementById("answer");
 const form=document.getElementById("aiForm");
+const questionEl=document.getElementById("question");
 const button=document.getElementById("askButton");
 const state=document.getElementById("requestState");
-async function checkHealth(){try{const response=await fetch("/api/health",{headers:{accept:"application/json"}});if(response.status===401){location.href="/login";return}const data=await response.json();if(response.ok&&data.configured){statusEl.className="status ok";statusEl.lastElementChild.textContent="API ready"}else{statusEl.className="status bad";statusEl.lastElementChild.textContent="API key missing"}}catch{statusEl.className="status bad";statusEl.lastElementChild.textContent="API unavailable"}}
-form.addEventListener("submit",async(event)=>{event.preventDefault();const question=document.getElementById("question").value.trim();if(!question)return;button.disabled=true;state.textContent="Analyzing…";answerEl.className="answer";answerEl.textContent="Working…";try{const response=await fetch("/api/ai",{method:"POST",headers:{"content-type":"application/json",accept:"application/json"},body:JSON.stringify({question})});if(response.status===401){location.href="/login";return}const data=await response.json();if(!response.ok)throw new Error(data.error||"The request failed.");answerEl.textContent=data.answer}catch(error){answerEl.textContent=error.message||"The request failed."}finally{button.disabled=false;state.textContent=""}});
+async function checkHealth(){try{const response=await fetch("/api/health",{headers:{accept:"application/json"}});const data=await response.json();if(response.ok&&data.ai_enabled&&data.configured){statusEl.className="status ok";statusEl.lastElementChild.textContent="AI ready";return}if(!data.ai_enabled){statusEl.className="status";statusEl.lastElementChild.textContent="AI disabled";button.disabled=true;questionEl.disabled=true;answerEl.textContent="AI access is disabled while the dashboard is publicly shared.";return}statusEl.className="status bad";statusEl.lastElementChild.textContent="API key missing";button.disabled=true;questionEl.disabled=true}catch{statusEl.className="status bad";statusEl.lastElementChild.textContent="AI unavailable";button.disabled=true;questionEl.disabled=true}}
+form.addEventListener("submit",async(event)=>{event.preventDefault();const question=questionEl.value.trim();if(!question)return;button.disabled=true;state.textContent="Analyzing…";answerEl.className="answer";answerEl.textContent="Working…";try{const response=await fetch("/api/ai",{method:"POST",headers:{"content-type":"application/json",accept:"application/json"},body:JSON.stringify({question})});const data=await response.json();if(!response.ok)throw new Error(data.error||"The request failed.");answerEl.textContent=data.answer}catch(error){answerEl.textContent=error.message||"The request failed."}finally{button.disabled=false;state.textContent=""}});
 checkHealth();
 </script>
 </body>
 </html>`;
-
-function loginHtml(errorMessage = "") {
-  const error = errorMessage ? `<div class="error" role="alert">${escapeHtml(errorMessage)}</div>` : "";
-  return String.raw`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#101a2b"><title>Property Management Command Center — Access</title><style>:root{color-scheme:light;--navy:#101a2b;--paper:#f4f6f8;--ink:#162034;--muted:#667085;--line:#dfe4ea;--red:#9f2d35}*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;background:linear-gradient(145deg,#101a2b,#213957);font:15px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink)}main{width:min(440px,100%);padding:32px;border-radius:20px;background:#fff;box-shadow:0 24px 70px #0005}h1{margin:0;font-size:27px;letter-spacing:-.03em}.eyebrow{color:#18836f;font-size:11px;font-weight:800;letter-spacing:.13em;text-transform:uppercase}p{color:var(--muted)}label{display:block;margin:22px 0 7px;font-weight:750}input{width:100%;padding:13px 14px;border:1px solid var(--line);border-radius:11px;font:inherit}input:focus{outline:0;border-color:#18836f;box-shadow:0 0 0 3px #18836f18}button{width:100%;margin-top:14px;padding:12px;border:0;border-radius:11px;background:var(--navy);color:#fff;font:inherit;font-weight:800;cursor:pointer}.error{margin-top:16px;padding:11px 12px;border-radius:10px;background:#fff0f1;color:var(--red);font-size:13px}.fine{margin-top:18px;font-size:11px;color:var(--muted)}</style></head><body><main><div class="eyebrow">Private dashboard</div><h1>Property Management Command Center</h1><p>Enter the shared access password. No ChatGPT, GitHub, or email account is required.</p>${error}<form method="post" action="/auth/login" autocomplete="off"><label for="password">Access password</label><input id="password" name="password" type="password" required autofocus maxlength="256" autocomplete="current-password"><button type="submit">Open dashboard</button></form><div class="fine">Access is stored in a secure browser session for 24 hours.</div></main></body></html>`;
-}
-
-function escapeHtml(value) {
-  return String(value).replace(/[&<>'"]/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[character]);
-}
 
 const SECURITY_HEADERS = {
   "cache-control": "no-store",
@@ -90,6 +81,7 @@ const SECURITY_HEADERS = {
   "referrer-policy": "no-referrer",
   "x-content-type-options": "nosniff",
   "x-frame-options": "DENY",
+  "x-robots-tag": "noindex, nofollow, noarchive",
 };
 
 function responseWithHeaders(body, init = {}) {
@@ -106,82 +98,12 @@ function htmlResponse(html, status = 200, extraHeaders = {}) {
   return responseWithHeaders(html, { status, headers: { "content-type": "text/html; charset=utf-8", ...extraHeaders } });
 }
 
-function redirectResponse(location, extraHeaders = {}) {
-  return responseWithHeaders(null, { status: 303, headers: { location, ...extraHeaders } });
+function redirectResponse(location) {
+  return responseWithHeaders(null, { status: 303, headers: { location } });
 }
 
-function authConfigured(env) {
-  return Boolean(env?.SITE_ACCESS_PASSWORD && env?.SITE_SESSION_SECRET && String(env.SITE_SESSION_SECRET).length >= 32);
-}
-
-function readCookie(request, name) {
-  const cookieHeader = request.headers.get("cookie") || "";
-  for (const part of cookieHeader.split(";")) {
-    const [key, ...valueParts] = part.trim().split("=");
-    if (key === name) return valueParts.join("=");
-  }
-  return "";
-}
-
-function bytesToBase64Url(bytes) {
-  let binary = "";
-  for (const byte of bytes) binary += String.fromCharCode(byte);
-  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
-}
-
-async function hmac(message, secret) {
-  const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
-  const signature = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(message));
-  return bytesToBase64Url(new Uint8Array(signature));
-}
-
-async function secureEqual(left, right) {
-  const [leftDigest, rightDigest] = await Promise.all([
-    crypto.subtle.digest("SHA-256", new TextEncoder().encode(String(left))),
-    crypto.subtle.digest("SHA-256", new TextEncoder().encode(String(right))),
-  ]);
-  const a = new Uint8Array(leftDigest);
-  const b = new Uint8Array(rightDigest);
-  let mismatch = a.length ^ b.length;
-  for (let index = 0; index < Math.min(a.length, b.length); index += 1) mismatch |= a[index] ^ b[index];
-  return mismatch === 0;
-}
-
-async function createSession(secret, nowSeconds = Math.floor(Date.now() / 1000)) {
-  const expires = nowSeconds + SESSION_TTL_SECONDS;
-  const payload = `v1.${expires}`;
-  return `${payload}.${await hmac(payload, secret)}`;
-}
-
-async function validSession(request, secret, nowSeconds = Math.floor(Date.now() / 1000)) {
-  const token = readCookie(request, SESSION_COOKIE);
-  const [version, expiresText, signature, ...rest] = token.split(".");
-  if (version !== "v1" || rest.length || !expiresText || !signature) return false;
-  const expires = Number(expiresText);
-  if (!Number.isSafeInteger(expires) || expires <= nowSeconds) return false;
-  const expected = await hmac(`${version}.${expiresText}`, secret);
-  return secureEqual(signature, expected);
-}
-
-function sessionCookie(token) {
-  return `${SESSION_COOKIE}=${token}; Path=/; Max-Age=${SESSION_TTL_SECONDS}; HttpOnly; Secure; SameSite=Lax`;
-}
-
-function clearSessionCookie() {
-  return `${SESSION_COOKIE}=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Lax`;
-}
-
-async function readLoginPassword(request) {
-  const contentType = (request.headers.get("content-type") || "").toLowerCase();
-  if (contentType.includes("application/x-www-form-urlencoded")) {
-    const form = new URLSearchParams(await request.text());
-    return form.get("password") || "";
-  }
-  if (contentType.includes("application/json")) {
-    const body = await request.json();
-    return typeof body?.password === "string" ? body.password : "";
-  }
-  return "";
+function publicAiEnabled(env) {
+  return String(env?.PUBLIC_AI_ENABLED || "false").toLowerCase() === "true";
 }
 
 async function readJson(request) {
@@ -197,14 +119,14 @@ function extractOutputText(payload) {
   return parts.join("\n").trim();
 }
 
-async function safetyIdentifier(request) {
-  const raw = readCookie(request, SESSION_COOKIE) || "private-site-user";
-  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(raw));
+async function safetyIdentifier() {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode("property-command-public-site"));
   const compact = [...new Uint8Array(digest)].slice(0, 12).map((byte) => byte.toString(16).padStart(2, "0")).join("");
   return `pcc_${compact}`;
 }
 
 async function handleAi(request, env, fetchImpl) {
+  if (!publicAiEnabled(env)) return jsonResponse({ error: "The AI advisor is disabled while the dashboard is publicly shared." }, 403);
   if (!env?.OPENAI_API_KEY) return jsonResponse({ error: "The server is not configured with OPENAI_API_KEY." }, 503);
   let body;
   try { body = await readJson(request); } catch (error) { return jsonResponse({ error: error.message }, error.status || 400); }
@@ -214,7 +136,11 @@ async function handleAi(request, env, fetchImpl) {
   if (question.length > MAX_QUESTION_LENGTH) return jsonResponse({ error: `Question must be ${MAX_QUESTION_LENGTH} characters or fewer.` }, 400);
   if (context.length > MAX_CONTEXT_LENGTH) return jsonResponse({ error: `Context must be ${MAX_CONTEXT_LENGTH} characters or fewer.` }, 400);
   const input = context ? `Dashboard context:\n${context}\n\nUser request:\n${question}` : question;
-  const upstream = await fetchImpl("https://api.openai.com/v1/responses", { method: "POST", headers: { authorization: `Bearer ${env.OPENAI_API_KEY}`, "content-type": "application/json" }, body: JSON.stringify({ model: env.OPENAI_MODEL || DEFAULT_MODEL, instructions: SYSTEM_INSTRUCTIONS, input, max_output_tokens: 900, store: false, safety_identifier: await safetyIdentifier(request) }) });
+  const upstream = await fetchImpl("https://api.openai.com/v1/responses", {
+    method: "POST",
+    headers: { authorization: `Bearer ${env.OPENAI_API_KEY}`, "content-type": "application/json" },
+    body: JSON.stringify({ model: env.OPENAI_MODEL || DEFAULT_MODEL, instructions: SYSTEM_INSTRUCTIONS, input, max_output_tokens: 900, store: false, safety_identifier: await safetyIdentifier() }),
+  });
   let payload;
   try { payload = await upstream.json(); } catch { payload = null; }
   if (!upstream.ok) {
@@ -229,30 +155,17 @@ async function handleAi(request, env, fetchImpl) {
 
 export async function handleRequest(request, env = {}, fetchImpl = fetch) {
   const url = new URL(request.url);
-  if (!authConfigured(env)) return htmlResponse("<h1>Site access is not configured.</h1><p>Set SITE_ACCESS_PASSWORD and a SITE_SESSION_SECRET of at least 32 characters, then redeploy.</p>", 503);
-
-  if (request.method === "GET" && url.pathname === "/login") {
-    if (await validSession(request, env.SITE_SESSION_SECRET)) return redirectResponse("/");
-    return htmlResponse(loginHtml(url.searchParams.get("error") === "1" ? "The password was not accepted." : ""));
-  }
-
-  if (request.method === "POST" && url.pathname === "/auth/login") {
-    let password = "";
-    try { password = await readLoginPassword(request); } catch { return htmlResponse(loginHtml("The login request was invalid."), 400); }
-    if (!(await secureEqual(password, env.SITE_ACCESS_PASSWORD))) return htmlResponse(loginHtml("The password was not accepted."), 401);
-    const token = await createSession(env.SITE_SESSION_SECRET);
-    return redirectResponse("/", { "set-cookie": sessionCookie(token) });
-  }
-
-  if (request.method === "POST" && url.pathname === "/auth/logout") return redirectResponse("/login", { "set-cookie": clearSessionCookie() });
-
-  if (!(await validSession(request, env.SITE_SESSION_SECRET))) {
-    if (url.pathname.startsWith("/api/")) return jsonResponse({ error: "Password authentication is required." }, 401);
-    return redirectResponse("/login");
-  }
-
+  if (request.method === "GET" && (url.pathname === "/login" || url.pathname === "/auth/logout")) return redirectResponse("/");
+  if (request.method === "POST" && (url.pathname === "/auth/login" || url.pathname === "/auth/logout")) return redirectResponse("/");
   if (request.method === "GET" && url.pathname === "/") return htmlResponse(SITE_HTML);
-  if (request.method === "GET" && url.pathname === "/api/health") return jsonResponse({ ok: true, configured: Boolean(env.OPENAI_API_KEY), model: env.OPENAI_MODEL || DEFAULT_MODEL, password_protected: true });
+  if (request.method === "GET" && url.pathname === "/api/health") return jsonResponse({
+    ok: true,
+    configured: Boolean(env.OPENAI_API_KEY),
+    model: env.OPENAI_MODEL || DEFAULT_MODEL,
+    public_access: true,
+    password_protected: false,
+    ai_enabled: publicAiEnabled(env),
+  });
   if (request.method === "POST" && url.pathname === "/api/ai") return handleAi(request, env, fetchImpl);
   if (url.pathname.startsWith("/api/")) return jsonResponse({ error: "Not found." }, 404);
   return responseWithHeaders("Not found.", { status: 404, headers: { "content-type": "text/plain; charset=utf-8" } });
