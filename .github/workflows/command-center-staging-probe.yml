@@ -1,0 +1,68 @@
+name: command-center-staging-probe
+on:
+  workflow_dispatch:
+  push:
+    branches: [command-center-staging-v080]
+permissions:
+  contents: read
+  id-token: write
+jobs:
+  live-infrastructure-probe:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: cc_admin
+          POSTGRES_PASSWORD: ci_probe_password
+          POSTGRES_DB: cc_probe
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U cc_admin -d cc_probe"
+          --health-interval 5s --health-timeout 5s --health-retries 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: Install live probe dependencies
+        run: pip install 'psycopg[binary]>=3.2' 'PyJWT[crypto]>=2.8' requests fastapi uvicorn 'webauthn>=2' 'playwright>=1.45'
+      - name: Prove Postgres RLS under NOBYPASSRLS role
+        env:
+          DSN: postgresql://cc_admin:ci_probe_password@127.0.0.1:5432/cc_probe
+        run: |
+          mkdir -p probe-artifacts
+          python - <<'PY' | tee probe-artifacts/postgres-rls.json
+          import json, os, psycopg
+          dsn=os.environ['DSN']; a='tenant-a'; b='tenant-b'
+          with psycopg.connect(dsn) as c:
+            q=c.cursor(); q.execute('create table items(tenant_id text not null, id text not null, primary key(tenant_id,id))'); q.execute('alter table items enable row level security'); q.execute('alter table items force row level security'); q.execute("create policy tenant_items on items using (tenant_id=current_setting('app.organization_id',true)) with check (tenant_id=current_setting('app.organization_id',true))")
+            q.execute('create role cc_probe_role nologin nosuperuser nobypassrls'); q.execute('grant select,insert,update,delete on items to cc_probe_role'); q.execute("insert into items values ('tenant-a','a'),('tenant-b','b')"); q.execute('set role cc_probe_role'); q.execute("select current_user,rolsuper,rolbypassrls from pg_roles where rolname=current_user"); role=q.fetchone(); q.execute("select set_config('app.organization_id',%s,true)",(a,)); q.execute('select tenant_id,id from items'); ra=q.fetchall(); blocked=False
+            try: q.execute("insert into items values ('tenant-b','x')")
+            except Exception: blocked=True; c.rollback()
+          out={'ok':role[1] is False and role[2] is False and ra==[(a,'a')] and blocked,'role':role[0],'superuser':role[1],'bypassrls':role[2],'visible':ra,'cross_tenant_write_blocked':blocked}; print(json.dumps(out,default=str)); raise SystemExit(0 if out['ok'] else 2)
+          PY
+      - name: Prove hosted OIDC/JWKS token validation
+        env:
+          AUDIENCE: command-center-staging-probe
+        run: |
+          python - <<'PY' | tee probe-artifacts/hosted-oidc.json
+          import hashlib,json,os,requests,urllib.parse,jwt
+          from jwt import PyJWKClient
+          u=os.environ['ACTIONS_ID_TOKEN_REQUEST_URL']; t=os.environ['ACTIONS_ID_TOKEN_REQUEST_TOKEN']; aud=os.environ['AUDIENCE']; sep='&' if '?' in u else '?'; tok=requests.get(u+sep+urllib.parse.urlencode({'audience':aud}),headers={'Authorization':'Bearer '+t},timeout=10).json()['value']; d=requests.get('https://token.actions.githubusercontent.com/.well-known/openid-configuration',timeout=10).json(); key=PyJWKClient(d['jwks_uri']).get_signing_key_from_jwt(tok); claims=jwt.decode(tok,key.key,algorithms=['RS256'],issuer=d['issuer'],audience=aud,options={'require':['exp','iat','sub']}); out={'ok':True,'issuer':claims['iss'],'audience':claims['aud'],'subject_fingerprint':hashlib.sha256(claims['sub'].encode()).hexdigest()[:16],'repository':claims.get('repository'),'token_persisted':False}; print(json.dumps(out))
+          PY
+      - name: Real public GitHub read-only request with no credential
+        run: |
+          python - <<'PY' | tee probe-artifacts/github-readonly.json
+          import json,requests
+          r=requests.get('https://api.github.com/repos/mkahan-bot/personal-operating-system',headers={'Accept':'application/vnd.github+json'},timeout=10); r.raise_for_status(); d=r.json(); print(json.dumps({'ok':True,'auth':'none','full_name':d['full_name'],'private':d['private'],'default_branch':d['default_branch']}))
+          PY
+      - name: Generate and retain hosted probe artifact
+        run: |
+          python -m pip freeze > probe-artifacts/dependencies.txt
+          sha256sum probe-artifacts/* > probe-artifacts/SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: command-center-live-infrastructure-probe-${{ github.sha }}
+          path: probe-artifacts/**
+          retention-days: 30
