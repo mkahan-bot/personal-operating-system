@@ -24,10 +24,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Prepare public dashboard
+      - name: Prepare public dashboard and review builds
         run: |
           mkdir -p site-dist
-          cp public/index.html site-dist/index.html
+          cp -R public/. site-dist/
           touch site-dist/.nojekyll
 
       - name: Configure Pages
