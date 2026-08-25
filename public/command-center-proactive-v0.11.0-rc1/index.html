@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0a1424">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>H&A Command Center — Proactive Execution v0.11.0-rc1</title>
+<style>
+:root{
+  --bg:#eef2f6;--ink:#142034;--muted:#6c788c;--line:#dce3ec;--card:#fff;
+  --nav:#0a1424;--nav2:#142d4d;--blue:#245eaa;--blue2:#eaf2ff;
+  --green:#197555;--green2:#e7f6ef;--amber:#9b6416;--amber2:#fff3d9;
+  --red:#a53c48;--red2:#fcebed;--shadow:0 12px 32px rgba(23,39,61,.07);
+}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+button,input,select,textarea{font:inherit}button{cursor:pointer}.app{min-height:100vh;display:grid;grid-template-columns:218px minmax(0,1fr)}
+aside{position:sticky;top:0;height:100vh;padding:22px 16px;color:#fff;background:linear-gradient(180deg,var(--nav),#0c2039)}
+.brand{display:flex;gap:10px;align-items:center;padding:3px 7px 24px}.logo{width:37px;height:37px;border:1px solid #ffffff35;border-radius:11px;display:grid;place-items:center;font-weight:850;color:#e9bb5e;background:#ffffff0b}.brand strong{display:block;font-size:14px}.brand small{color:#8fa0b5;font-size:9px;text-transform:uppercase;letter-spacing:.12em}
+.nav{display:grid;gap:4px}.nav button{border:0;border-radius:9px;padding:10px 11px;color:#9fb0c4;background:transparent;text-align:left;font-size:12px}.nav button.active,.nav button:hover{color:#fff;background:#ffffff15}.nav button.active{box-shadow:inset 3px 0 #e0b55f}
+.side-status{margin-top:auto;position:absolute;left:16px;right:16px;bottom:18px;padding:12px;border:1px solid #ffffff1a;border-radius:11px;background:#ffffff0b}.side-status strong{font-size:10px;color:#e8c475}.side-status p{font-size:9px;color:#93a4b9;line-height:1.45;margin:6px 0 0}
+main{padding:24px 28px 48px;min-width:0}.top{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:18px}.eyebrow{font-size:9px;font-weight:850;letter-spacing:.15em;text-transform:uppercase;color:var(--blue)}h1{margin:4px 0 3px;font-size:25px;letter-spacing:-.045em}.sub{font-size:11px;color:var(--muted)}
+.top-actions{display:flex;gap:8px;align-items:center}.status{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:99px;padding:7px 10px;background:#fff;font-size:10px;font-weight:750}.status i{width:7px;height:7px;border-radius:50%;background:var(--green)}
+.btn{border:1px solid var(--line);border-radius:9px;padding:9px 11px;background:#fff;color:var(--ink);font-size:10px;font-weight:750}.btn.primary{background:var(--nav);border-color:var(--nav);color:#fff}.btn.blue{background:var(--blue);border-color:var(--blue);color:#fff}.btn.danger{background:#fff;border-color:#e2b8bd;color:var(--red)}.btn:disabled{opacity:.5;cursor:not-allowed}
+.grid{display:grid;grid-template-columns:minmax(0,1.48fr) minmax(290px,.72fr);gap:15px}.stack{display:grid;gap:15px}.panel{background:var(--card);border:1px solid var(--line);border-radius:15px;box-shadow:var(--shadow);padding:17px}.panel-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:13px}.panel h2{font-size:14px;margin:0;letter-spacing:-.02em}.panel p{margin:3px 0 0;color:var(--muted);font-size:9px}.count{border-radius:99px;padding:5px 8px;background:var(--blue2);color:var(--blue);font-size:9px;font-weight:850}
+.request{border:1px solid var(--line);border-radius:13px;padding:14px;margin-top:10px;background:#fff}.request.urgent{border-color:#efc4c9;background:linear-gradient(90deg,#fff,#fff9f9)}.req-top{display:flex;justify-content:space-between;gap:10px}.req-title{font-size:12px;font-weight:820}.project{margin-top:3px;color:var(--muted);font-size:9px}.timer{white-space:nowrap;font-size:10px;font-weight:850;color:var(--amber);background:var(--amber2);padding:5px 7px;border-radius:8px}.timer.overdue{color:var(--red);background:var(--red2)}.why{font-size:10px;line-height:1.48;margin:10px 0;color:#455168}
+.choice-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.choice{border:1px solid var(--line);border-radius:9px;padding:9px;background:#fafbfd;text-align:left}.choice.selected{border-color:#81a8dc;background:var(--blue2)}.choice strong{display:block;font-size:9px}.choice span{display:block;margin-top:4px;color:var(--muted);font-size:8px;line-height:1.35}.req-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.permission{margin-top:9px;font-size:8px;color:var(--muted)}.permission b{color:var(--ink)}
+.agent{display:grid;grid-template-columns:29px minmax(0,1fr) auto;align-items:center;gap:9px;padding:10px 0;border-bottom:1px solid #edf0f4}.agent:last-child{border-bottom:0}.avatar{width:29px;height:29px;border-radius:9px;background:var(--blue2);color:var(--blue);display:grid;place-items:center;font-size:10px;font-weight:850}.agent strong{display:block;font-size:10px}.agent small{display:block;color:var(--muted);font-size:8px;margin-top:2px}.agent-state{font-size:8px;font-weight:800;color:var(--green)}.mini-track{height:4px;background:#edf1f5;border-radius:99px;overflow:hidden;margin-top:5px}.mini-fill{height:100%;background:var(--blue);border-radius:99px}
+.momentum{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.momentum div{padding:11px;border:1px solid var(--line);border-radius:11px;background:#fbfcfd}.momentum span{display:block;color:var(--muted);font-size:8px;text-transform:uppercase;letter-spacing:.06em}.momentum strong{display:block;font-size:20px;margin-top:5px}.good{color:var(--green)}.warn{color:var(--amber)}.bad{color:var(--red)}
+.pipeline{display:flex;gap:3px;align-items:center;overflow-x:auto;padding-bottom:4px}.stage{min-width:86px;padding:9px;border-radius:9px;border:1px solid var(--line);background:#fafbfd}.stage.done{background:var(--green2);border-color:#b4ddcc}.stage.current{background:var(--blue2);border-color:#b8cee9}.stage strong{display:block;font-size:8px}.stage small{display:block;font-size:7px;color:var(--muted);margin-top:3px}.arrow{color:#a7b2c1;font-size:11px}
+.model-card{border:1px solid var(--line);border-radius:11px;padding:11px}.model-row{display:flex;justify-content:space-between;gap:10px}.model-card strong{font-size:10px}.model-card p{font-size:8px;line-height:1.4}.model-chip{font-size:8px;font-weight:850;color:var(--green);background:var(--green2);padding:4px 6px;border-radius:7px;white-space:nowrap}
+.goal{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}textarea{resize:vertical;min-height:62px;width:100%;border:1px solid var(--line);border-radius:10px;padding:10px;font-size:10px;color:var(--ink);outline:none}textarea:focus{border-color:#78a3db;box-shadow:0 0 0 3px #245eaa18}
+.toast{position:fixed;right:20px;bottom:20px;padding:10px 13px;border-radius:9px;background:var(--nav);color:#fff;font-size:9px;opacity:0;transform:translateY(10px);transition:.2s;pointer-events:none;z-index:50}.toast.show{opacity:1;transform:none}
+.notice{margin-bottom:14px;border:1px solid #b7d5cb;border-radius:11px;padding:10px 12px;background:#f0faf6;color:#286652;font-size:9px;line-height:1.4}
+@media(max-width:980px){.app{grid-template-columns:1fr}aside{display:none}main{padding:18px}.grid{grid-template-columns:1fr}.choice-grid{grid-template-columns:1fr}.momentum{grid-template-columns:repeat(2,1fr)}.top{align-items:flex-start;flex-direction:column}.top-actions{width:100%;overflow:auto}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside>
+  <div class="brand"><div class="logo">H&A</div><div><strong>Command Center</strong><small>Proactive execution</small></div></div>
+  <div class="nav">
+    <button class="active">Action queue</button><button>AI working</button><button>Projects</button>
+    <button>Pipelines</button><button>Agents</button><button>Models</button><button>Approvals</button><button>Audit</button>
+  </div>
+  <div class="side-status"><strong>SAFE MODE · LIVE TEST</strong><p>Drafts and internal reversible actions only. Send, deploy, delete, legal, financial, and destructive actions remain locked.</p></div>
+</aside>
+<main>
+<header class="top">
+  <div><div class="eyebrow">Execution-first workspace</div><h1>What needs your decision now</h1><div class="sub">AI advances work continuously and asks only for the decisions or permissions it cannot safely take.</div></div>
+  <div class="top-actions"><span class="status"><i></i> Proactive worker healthy</span><button class="btn" id="pause">Pause agents</button><button class="btn primary" id="scan">Scan now</button></div>
+</header>
+<div class="notice">This public live-test interface uses browser-local demonstration state. It contains no credentials and cannot send email, modify Drive/GitHub, deploy sites, or submit external forms.</div>
+<div class="grid">
+  <div class="stack">
+    <section class="panel">
+      <div class="panel-head"><div><h2>Action needed from you</h2><p>Choose a prepared action. The system handles the next steps after permission.</p></div><span class="count" id="requestCount">3 decisions</span></div>
+      <div id="requests"></div>
+    </section>
+    <section class="panel">
+      <div class="panel-head"><div><h2>Project momentum</h2><p>Movement signals generated from tasks, deadlines, dependencies, and unresolved decisions.</p></div><span class="count">Last scan · now</span></div>
+      <div class="momentum"><div><span>Advancing</span><strong class="good">12</strong></div><div><span>At risk</span><strong class="warn">3</strong></div><div><span>Stalled</span><strong class="bad">2</strong></div><div><span>Blocked</span><strong class="bad">1</strong></div></div>
+    </section>
+    <section class="panel">
+      <div class="panel-head"><div><h2>Attached delivery pipeline</h2><p>Systems and processes are attached directly to the project and advance when gates are satisfied.</p></div><button class="btn">Change pipeline</button></div>
+      <div class="pipeline">
+        <div class="stage done"><strong>Intake</strong><small>Complete</small></div><span class="arrow">›</span>
+        <div class="stage done"><strong>Research</strong><small>Verified</small></div><span class="arrow">›</span>
+        <div class="stage current"><strong>Plan</strong><small>Awaiting approval</small></div><span class="arrow">›</span>
+        <div class="stage"><strong>Execute</strong><small>Locked</small></div><span class="arrow">›</span>
+        <div class="stage"><strong>Verify</strong><small>Not started</small></div><span class="arrow">›</span>
+        <div class="stage"><strong>Closeout</strong><small>Not started</small></div><span class="arrow">›</span>
+        <div class="stage"><strong>Follow-up</strong><small>Scheduled</small></div>
+      </div>
+    </section>
+    <section class="panel">
+      <div class="panel-head"><div><h2>Start with a goal</h2><p>The orchestrator will create the project, choose a pipeline, generate tasks, select models, and propose the first permission.</p></div></div>
+      <div class="goal"><textarea id="goalText" placeholder="Example: Finalize the leasing launch and make sure no decision, vendor response, or deadline goes stale."></textarea><button class="btn blue" id="startGoal">Build execution plan</button></div>
+    </section>
+  </div>
+  <div class="stack">
+    <section class="panel">
+      <div class="panel-head"><div><h2>AI working now</h2><p>Bounded teams with separate verification and live stop controls.</p></div><span class="count">5 agents</span></div>
+      <div id="agents"></div>
+    </section>
+    <section class="panel">
+      <div class="panel-head"><div><h2>Ollama routing</h2><p>Models are selected from promoted benchmarks, task requirements, and available hardware.</p></div><button class="btn">Benchmark</button></div>
+      <div class="model-card"><div class="model-row"><strong>Current task · repository implementation</strong><span class="model-chip">PROMOTED</span></div><p><b>Primary:</b> qwen3-coder:30b · strongest promoted coding score within current VRAM and context limits.</p><p><b>Reviewer:</b> gpt-oss:120b · independent systems and security review. Fallback remains local-only.</p></div>
+    </section>
+    <section class="panel">
+      <div class="panel-head"><div><h2>Next retriggers</h2><p>Automatic follow-up keeps projects moving without repeated manual prompting.</p></div></div>
+      <div class="agent"><div class="avatar">2h</div><div><strong>Surveyor availability</strong><small>Retrigger if no response</small></div><span class="agent-state">ARMED</span></div>
+      <div class="agent"><div class="avatar">6h</div><div><strong>Permit evidence review</strong><small>Escalate missing source</small></div><span class="agent-state">ARMED</span></div>
+      <div class="agent"><div class="avatar">1d</div><div><strong>Leasing launch decision</strong><small>Recalculate recommended action</small></div><span class="agent-state">ARMED</span></div>
+    </section>
+  </div>
+</div>
+</main>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const requests=[
+ {id:"r1",urgent:true,title:"Approve the launch recovery plan",project:"The Current · Leasing launch",due:Date.now()+1000*60*37,why:"Lead response and creative approvals are now on the critical path. AI has reconciled the dependencies and prepared the shortest recoverable sequence.",selected:0,choices:[
+  ["Approve recommended plan","Start the bounded launch team and stage all reversible work."],
+  ["Review evidence first","Open the source pack and challenge assumptions before execution."],
+  ["Reschedule milestones","Recalculate a feasible deadline and notify internal owners."]],permission:"Internal task writes and draft generation only"},
+ {id:"r2",urgent:false,title:"Choose the next plat-survey action",project:"2020 Menaul · Minor plat",due:Date.now()+1000*60*60*4,why:"The task is stalled pending a vendor path. AI identified the highest-probability next actions and will continue follow-up after your choice.",selected:0,choices:[
+  ["Start vendor team","Research, rank, and prepare contact drafts for qualified surveyors."],
+  ["Use existing contact","Prepare a scoped request for the current preferred firm."],
+  ["Defer until tomorrow","Preserve the task and automatically retrigger tomorrow morning."]],permission:"Research and unsent email drafts only"},
+ {id:"r3",urgent:false,title:"Accept verified agent output",project:"Grove · NOO litigation",due:Date.now()+1000*60*60*22,why:"The research and independent verification stages are complete. Acceptance advances the pipeline to planning; it does not authorize filing or external communication.",selected:0,choices:[
+  ["Accept and advance","Record the verified output and activate the planning stage."],
+  ["Return for revision","Send exact deficiencies back to the research team."],
+  ["Add second review","Spin up a separate reviewer before acceptance."]],permission:"Project-state update only"}
+];
+const agents=[
+ ["OR","Orchestrator","Sequencing tasks and checking approval scope",72],
+ ["RS","Research agent","Collecting current evidence and source freshness",58],
+ ["PL","Planning agent","Building dependency-aware execution plan",41],
+ ["RV","Independent reviewer","Testing assumptions and action boundaries",64],
+ ["VF","Verifier","Waiting for target-state evidence",18]
+];
+const toast=m=>{const t=document.getElementById("toast");t.textContent=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2200)};
+function duration(ms){const overdue=ms<0;ms=Math.abs(ms);const h=Math.floor(ms/3600000),m=Math.floor(ms%3600000/60000),s=Math.floor(ms%60000/1000);return {text:overdue?`Overdue ${h}h ${m}m`:(h?`${h}h ${m}m`:`${m}m ${s}s`),overdue}}
+function renderRequests(){
+ const root=document.getElementById("requests");root.innerHTML="";
+ requests.forEach((r,ri)=>{
+  const d=document.createElement("div");d.className="request"+(r.urgent?" urgent":"");
+  d.innerHTML=`<div class="req-top"><div><div class="req-title">${r.title}</div><div class="project">${r.project}</div></div><div class="timer" data-due="${r.due}"></div></div><div class="why">${r.why}</div><div class="choice-grid">${r.choices.map((c,i)=>`<button class="choice ${i===r.selected?"selected":""}" data-request="${ri}" data-choice="${i}"><strong>${c[0]}</strong><span>${c[1]}</span></button>`).join("")}</div><div class="req-actions"><button class="btn blue approve" data-request="${ri}">Approve once</button><button class="btn defer" data-request="${ri}">Defer</button><button class="btn danger dismiss" data-request="${ri}">Dismiss</button></div><div class="permission"><b>Permission requested:</b> ${r.permission}. Exact scope, single use, fully audited.</div>`;
+  root.appendChild(d);
+ });
+ document.getElementById("requestCount").textContent=`${requests.length} decision${requests.length===1?"":"s"}`;
+ document.querySelectorAll(".choice").forEach(b=>b.onclick=()=>{requests[+b.dataset.request].selected=+b.dataset.choice;renderRequests()});
+ document.querySelectorAll(".approve").forEach(b=>b.onclick=()=>{const r=requests[+b.dataset.request],choice=r.choices[r.selected][0];requests.splice(+b.dataset.request,1);renderRequests();toast(`Approved once: ${choice}`)});
+ document.querySelectorAll(".defer").forEach(b=>b.onclick=()=>{const r=requests[+b.dataset.request];r.due=Date.now()+3600000;toast("Deferred for 1 hour; automatic retrigger armed");renderRequests()});
+ document.querySelectorAll(".dismiss").forEach(b=>b.onclick=()=>{requests.splice(+b.dataset.request,1);renderRequests();toast("Dismissed; material changes may create a new proposal")});
+ updateTimers();
+}
+function updateTimers(){document.querySelectorAll(".timer").forEach(el=>{const d=duration(+el.dataset.due-Date.now());el.textContent=d.text;el.classList.toggle("overdue",d.overdue)})}
+function renderAgents(){document.getElementById("agents").innerHTML=agents.map(a=>`<div class="agent"><div class="avatar">${a[0]}</div><div><strong>${a[1]}</strong><small>${a[2]}</small><div class="mini-track"><div class="mini-fill" style="width:${a[3]}%"></div></div></div><span class="agent-state">WORKING</span></div>`).join("")}
+document.getElementById("scan").onclick=()=>toast("Fresh project scan complete; no duplicate proposals created");
+document.getElementById("pause").onclick=e=>{e.target.textContent=e.target.textContent==="Pause agents"?"Resume agents":"Pause agents";toast(e.target.textContent==="Resume agents"?"Agents paused safely":"Agents resumed")};
+document.getElementById("startGoal").onclick=()=>{const v=document.getElementById("goalText").value.trim();if(!v)return toast("Enter a goal first");toast("Goal converted into a project, pipeline, bounded team, and first action request");document.getElementById("goalText").value=""};
+renderRequests();renderAgents();setInterval(updateTimers,1000);
+</script>
+</body>
+</html>
