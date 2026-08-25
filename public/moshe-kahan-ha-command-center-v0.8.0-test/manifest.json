@@ -1,0 +1,14 @@
+{
+  "release": "0.8.0",
+  "channel": "isolated-live-test",
+  "files": {
+    "index.html": {"bytes": 2272, "sha256": "c19674bf516fc8c6f967e9bf88d6cd93c71b50049987ae7a129549391ff5072d"},
+    "chunks/0.txt": {"bytes": 11341, "sha256": "49cae24f96fc22b1e1b628fc51cc25a41a49b1b396bc3763a80bfbd0ca066605"},
+    "chunks/1.txt": {"bytes": 11341, "sha256": "8dd1048cfbe40098efa3a34fe1de9aef99e8fcf4a8ee04e3556fd62eb9829d79"},
+    "chunks/2.txt": {"bytes": 11341, "sha256": "7d258ace807c9367e90692e537a617fd059b4cac49adf7d805a753cd84d1f547"},
+    "chunks/3.txt": {"bytes": 11341, "sha256": "67d6b9ca6602df1d0a89251d601e27860f375dcf50acbbfe6c9c20f2ebef6d4d"},
+    "version.json": {"bytes": 305, "sha256": "a9deba7c5ac15c4b212a4575c7b8f636e94da5620acb1ba0d66d21437c4ab297"},
+    "health.json": {"bytes": 118, "sha256": "a0ed6edb867cd38057289eb5c2d5a387f8ceb059a32d410052e1bfbafecefffd"},
+    "README.md": {"bytes": 254, "sha256": "4c87c4217dc715bcca13263686263d95718a9eb5f8907aa648e95e774fd44d8e"}
+  }
+}

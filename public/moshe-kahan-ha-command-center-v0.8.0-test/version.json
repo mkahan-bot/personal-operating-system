@@ -1,0 +1,8 @@
+{
+  "name": "Moshe Kahan H&A Command Center — Proactive Execution",
+  "version": "0.8.0",
+  "channel": "isolated-live-test",
+  "runtime": "browser-test-adapter",
+  "external_actions": "simulated-only",
+  "source_integrity_sha256": "30433f75b4aa97e173030c7756f74eefe6f9eff096e6440571ac02cfe3fd9f8f"
+}
