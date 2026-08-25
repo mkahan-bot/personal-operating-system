@@ -1,0 +1,17 @@
+{
+  "product": "Moshe Kahan H&A Command Center",
+  "release": "Integrated Proactive Execution v0.8.1",
+  "version": "0.8.1",
+  "deployment_mode": "integrated-browser-pilot",
+  "previous_dashboards_overwritten": false,
+  "authentication": "browser-local-pbkdf2",
+  "persistence": "browser-localStorage",
+  "google_oauth": "user-configured-token-model",
+  "gmail_reads": true,
+  "gmail_draft_creation": true,
+  "gmail_sending": false,
+  "drive_metadata_reads": true,
+  "calendar_reads": true,
+  "consequential_external_writes": false,
+  "created_on": "2026-08-25"
+}
