@@ -1,0 +1,13 @@
+{
+  "status": "ok",
+  "version": "0.8.1",
+  "mode": "integrated-browser-pilot",
+  "proactive_engine": true,
+  "local_login": true,
+  "work_management": true,
+  "google_oauth_configurable": true,
+  "gmail_draft_only": true,
+  "gmail_sending": false,
+  "consequential_external_writes": false,
+  "hermes_runtime": "simulation"
+}

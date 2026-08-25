@@ -1,0 +1,26 @@
+{
+  "release": "0.8.1",
+  "channel": "integrated-live-pilot",
+  "runtime_bundle": "gzip-base64-integrity-loader",
+  "source_payload_bytes": 242407,
+  "source_payload_sha256": "5c33209140608dc99617c3efea6cc885654be8ffe1f2502d35b4a1ec1a7f80ae",
+  "compressed_bytes": 56336,
+  "encoded_chunks": 8,
+  "previous_dashboards_overwritten": false,
+  "files": {
+    "BUNDLE-INFO.json": {"bytes": 280, "sha256": "c804445445a85231fe5f27567d0c2c5f5dcce3d5f20280c2c5579973e8d64625"},
+    "GOOGLE-OAUTH-SETUP.md": {"bytes": 2368, "sha256": "d4d0a62a5e70cb27750d310bb3717468bd441db2b7477e98a37d99fcc0bf0821"},
+    "chunks/0.txt": {"bytes": 10000, "sha256": "886b2b6feead2c9484a9240424778196c11c6cb3429b7541b9627935c1e46af1"},
+    "chunks/1.txt": {"bytes": 10000, "sha256": "c9a18dcb478949e7b9b4e7799cad6a81c200a2be73907c69ac0a1665fdd99da1"},
+    "chunks/2.txt": {"bytes": 10000, "sha256": "d50fcef70ad478326517143350bf3d93db2a28d290292ff68c8b38e5cadd9a81"},
+    "chunks/3.txt": {"bytes": 10000, "sha256": "7e3023c8b4bddaba7bdfc73935379e8bf38bc4d73a1ef1362813e0a503adad16"},
+    "chunks/4.txt": {"bytes": 10000, "sha256": "0ea461faf47f31c4971a5f5e1fe2282ff92e7212054cf6ed9289bd36622baa05"},
+    "chunks/5.txt": {"bytes": 10000, "sha256": "78abeec0176a9f8940e41dd6984eeda4e4213f4e4c6c9b5edacf57b5c770daa7"},
+    "chunks/6.txt": {"bytes": 10000, "sha256": "d907247a8938ac37a233e1efd6c8a55068ec7dcbb5b5d97dad732bb89d3fcc9c"},
+    "chunks/7.txt": {"bytes": 5116, "sha256": "723ebb283838b6550ab3683f8bd50cca349508aa6fce60280ba67227a2b06fee"},
+    "health.json": {"bytes": 326, "sha256": "8d75d4a5ebf3d557eff5763bb057cf306146d30ce900aba8c91c8c9c0e1b0e2f"},
+    "index.html": {"bytes": 2323, "sha256": "4410c7e35b785c5a6ac0d2e3d0021c78066c972b2f0cd0b15052159b29fcad95"},
+    "validation.json": {"bytes": 1310, "sha256": "787310c5b8d20866d1149aa279e60a88acf5a24e514f59f3e0d2d7de3df84a57"},
+    "version.json": {"bytes": 564, "sha256": "cf86f1598ce87c9ad8f405214653ff79b63d23285330dd9899206a84213a223f"}
+  }
+}

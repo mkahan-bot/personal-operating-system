@@ -1,0 +1,38 @@
+{
+  "status": "pass",
+  "version": "0.8.1",
+  "validated_at": "2026-08-25T14:17:45Z",
+  "node_test_suites": 3,
+  "node_assertions": 64,
+  "syntax_checks": [
+    "public/static/test-backend.js",
+    "public/static/app.js",
+    "public/static/integrated.js"
+  ],
+  "browser_flow": {
+    "status": "pass",
+    "engine": "Chromium/Playwright",
+    "viewports": [
+      "1440x1000",
+      "390x844"
+    ],
+    "flows": [
+      "first-use owner setup and local login",
+      "systems, processes, projects, tasks, mail, drive, integrations, pipeline, agents, models, and audit navigation",
+      "task creation with immediate cross-view synchronization",
+      "Google OAuth client-ID validation",
+      "mocked Google Identity Services consent and account restriction",
+      "Gmail inbox read and Gmail draft creation",
+      "Gmail message conversion to proactive task",
+      "Drive metadata search and evidence-link attachment",
+      "Calendar read and connector health checks",
+      "audit-chain verification",
+      "responsive mobile navigation"
+    ]
+  },
+  "connector_transport": "mocked Google API responses; no real Google credentials were used during automated validation",
+  "gmail_draft_posts": 1,
+  "gmail_send_calls": 0,
+  "drive_calendar_write_calls": 0,
+  "previous_dashboards_modified": false
+}
