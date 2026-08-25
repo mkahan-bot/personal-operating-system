@@ -1,0 +1,6 @@
+{
+  "status": "ok",
+  "version": "0.8.0",
+  "channel": "isolated-live-test",
+  "external_actions": "simulated-only"
+}
