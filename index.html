@@ -27,7 +27,8 @@
 <div id="drawerWrap" class="drawer-backdrop" onclick="backdropClose(event)"><div class="drawer" id="drawer"></div></div><div id="toast" class="toast"></div>
 <script>
 const STORE='ha-command-center-v1';
-const seed={version:1,active:'pos',workspaces:{
+const estateBankingTask={id:'p7-estate-banking-20261012',workspace:'pos',project:'Estate of Danielle Drew — estate bank account',category:'Legal / Risk',outcome:'Estate operating account ready to receive properly payable estate funds and pay approved expenses',next:'Assemble certified death certificate, appointment Letters, IRS estate EIN letter and administrator ID; call Ally at 877-247-2559 to request a standalone estate Spending account and a secure document-upload link',owner:'Court-appointed administrator',role:'Administrator',priority:'A',due:'',status:'Blocked',blocker:'Document readiness, exact authorized fiduciary identity and standalone estate account acceptance unverified',review:'',delegation:'L1',notes:'Ally recommended for signup to avoid the unresolved credit-union estate membership gate. Request estate Spending, with optional Savings for reserves at 3.10% APY verified 2026-10-12, variable. Confirm Ally accepts this standalone estate application and court authority. Quorum may offer faster opening only after estate membership eligibility is cleared; advertised 24-hour turnaround is conditional on accepted documents. Sources: https://www.ally.com/docs/bank/estate-account-application/ ; https://www.ally.com/bank/how-to-settle-an-estate/ ; https://www.ally.com/bank/view-rates/ ; https://info.quorumfcu.org/probateexpress-faq . Application not submitted. Do not store ID, SSN, EIN, account details or supporting bank documents in this repository.'};
+const seed={version:1,migrations:{estateBanking20261012:true},active:'pos',workspaces:{
  pos:{name:'Personal Operating System',color:'#1f6b52',subtitle:'Business execution and family protection in one command center.'},
  jefferson:{name:'Jefferson Compliance',color:'#b77734',subtitle:'Compliance, inspections, permits, corrective work, and municipal coordination.'},
  ha:{name:'H&A Weekly Execution',color:'#305e8a',subtitle:'Weekly outcomes, owners, blockers, delegation, and decision queue.'}
@@ -39,6 +40,7 @@ const seed={version:1,active:'pos',workspaces:{
  {id:'p5',workspace:'pos',project:'Clearstone Nashville PSA',category:'Legal / Risk',outcome:'Complete seller due diligence and authority package',next:'Confirm exhibit accuracy and deliver final organizational authority documents',owner:'Aubrey',role:'Lead',priority:'A',due:'2026-08-06',status:'In Progress',blocker:'Final document verification',review:'2026-08-04',delegation:'L1',notes:'Seller-side legal work; preserve executed PSA requirements.'},
  {id:'p6',workspace:'pos',project:'Quality Cut loan closeout',category:'Finance / Lender',outcome:'Reconcile $13,000 supplies and complete collateral certificate',next:'Review updated inventory for duplicates, ineligible items, and remaining funds',owner:'Eric / Aubrey',role:'Reviewer',priority:'B',due:'2026-08-10',status:'Waiting',blocker:'Completed and corrected inventory schedule',review:'2026-08-06',delegation:'L3',notes:'Original loan total $19,500; repayment begins month 5 at $250/month.'},
  {id:'p7',workspace:'pos',project:'Estate of Danielle Drew administration',category:'Legal / Risk',outcome:'Identify and collect employer-related estate assets and tax records',next:'Contact Mark Natale for W-2, 401(k), life insurance, benefits, and liabilities',owner:'Aubrey',role:'Administrator',priority:'A',due:'2026-08-05',status:'Next',blocker:'Correct law-firm/company contact',review:'2026-08-05',delegation:'L1',notes:'User appointed estate administrator.'},
+ estateBankingTask,
  {id:'p8',workspace:'pos',project:'Personal Operating System dashboard',category:'AI / Systems',outcome:'Live editable shared command center with AI-ready updates',next:'Review beta, validate seed records, and choose shared backend/authentication',owner:'Aubrey / AI',role:'Product owner',priority:'A',due:'2026-08-07',status:'In Progress',blocker:'User acceptance and backend selection',review:'2026-08-04',delegation:'L4',notes:'GitHub Pages beta uses local persistence and JSON import/export.'},
  {id:'p9',workspace:'pos',project:'Family protection rhythm',category:'Family / Personal',outcome:'Family remains the protected first priority while work execution improves',next:'Schedule four family blocks, spouse sync, and one-on-one kid ritual this week',owner:'Aubrey',role:'Owner',priority:'A',due:'2026-08-09',status:'Recurring',blocker:'Calendar protection and phone shutdown discipline',review:'2026-08-09',delegation:'L1',notes:'Target ≥4 honored family blocks and ≥4 deep-work blocks per week.'},
  {id:'j1',workspace:'jefferson',project:'NOO / municipal compliance closeout',category:'Compliance / Municipal',outcome:'Close remaining registration/citation matters with preserved defenses',next:'Confirm dismissal with prejudice and agreed-order completion in the record',owner:'Aubrey / municipal counsel',role:'Legal oversight',priority:'A',due:'2026-08-07',status:'Waiting',blocker:'Final court/city documentation',review:'2026-08-05',delegation:'L2',notes:'No admission; defenses reserved; agreed 2025–2026 fee.'},
@@ -49,7 +51,17 @@ const seed={version:1,active:'pos',workspaces:{
  {id:'h3',workspace:'ha',project:'Lender and draw reporting',category:'Finance / Lender',outcome:'Complete, timely lender packs and reconciled draw support',next:'Confirm active property draw deadlines and required invoices, waivers, photos and inspections',owner:'Ariel / project leads',role:'Reviewer',priority:'B',due:'2026-08-07',status:'Recurring',blocker:'Source-document collection',review:'2026-08-07',delegation:'L4',notes:''}
 ]};
 let state=load();let filters={q:'',category:'',status:'',priority:''};
-function load(){try{const x=JSON.parse(localStorage.getItem(STORE));return x?.items?x:structuredClone(seed)}catch{return structuredClone(seed)}}
+function load(){
+ let x;try{x=JSON.parse(localStorage.getItem(STORE))}catch{return structuredClone(seed)}
+ if(!x?.items)return structuredClone(seed);
+ // Only migrate the original Danielle Drew roadmap; leave unrelated imports alone.
+ if(!Array.isArray(x.items)||x.migrations?.estateBanking20261012||!x.workspaces?.pos||!x.items.some(i=>i?.id==='p7'&&i.workspace==='pos'&&i.project==='Estate of Danielle Drew administration'))return x;
+ if(!x.items.some(i=>i?.id===estateBankingTask.id))x.items.push(structuredClone(estateBankingTask));
+ x.migrations={...x.migrations,estateBanking20261012:true};
+ // A storage error must not discard the user's saved state or block loading.
+ try{localStorage.setItem(STORE,JSON.stringify(x))}catch{}
+ return x;
+}
 function save(){localStorage.setItem(STORE,JSON.stringify(state));render();}
 function esc(v=''){return String(v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
 function uid(){return 'i'+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
@@ -83,3 +95,4 @@ render();
 </script>
 </body>
 </html>
+
